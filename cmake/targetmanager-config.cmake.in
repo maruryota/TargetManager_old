@@ -1,0 +1,54 @@
+# TargetManager CMake config file
+#
+# This file sets the following variables:
+# TargetManager_FOUND - Always TRUE.
+# TargetManager_INCLUDE_DIRS - Directories containing the TargetManager include files.
+# TargetManager_IDL_DIRS - Directories containing the TargetManager IDL files.
+# TargetManager_LIBRARIES - Libraries needed to use TargetManager.
+# TargetManager_DEFINITIONS - Compiler flags for TargetManager.
+# TargetManager_VERSION - The version of TargetManager found.
+# TargetManager_VERSION_MAJOR - The major version of TargetManager found.
+# TargetManager_VERSION_MINOR - The minor version of TargetManager found.
+# TargetManager_VERSION_REVISION - The revision version of TargetManager found.
+# TargetManager_VERSION_CANDIDATE - The candidate version of TargetManager found.
+
+message(STATUS "Found TargetManager-@PROJECT_VERSION@")
+set(TargetManager_FOUND TRUE)
+
+find_package(<dependency> REQUIRED)
+
+#set(TargetManager_INCLUDE_DIRS
+#    "@CMAKE_INSTALL_PREFIX@/include/@PROJECT_NAME_LOWER@-@PROJECT_VERSION_MAJOR@"
+#    ${<dependency>_INCLUDE_DIRS}
+#    )
+#
+#set(TargetManager_IDL_DIRS
+#    "@CMAKE_INSTALL_PREFIX@/include/@PROJECT_NAME_LOWER@-@PROJECT_VERSION_MAJOR@/idl")
+set(TargetManager_INCLUDE_DIRS
+    "@CMAKE_INSTALL_PREFIX@/include/@CPACK_PACKAGE_FILE_NAME@"
+    ${<dependency>_INCLUDE_DIRS}
+    )
+set(TargetManager_IDL_DIRS
+    "@CMAKE_INSTALL_PREFIX@/include/@CPACK_PACKAGE_FILE_NAME@/idl")
+
+
+if(WIN32)
+    set(TargetManager_LIBRARIES
+        "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/@CMAKE_SHARED_LIBRARY_PREFIX@@PROJECT_NAME_LOWER@@CMAKE_STATIC_LIBRARY_SUFFIX@"
+        ${<dependency>_LIBRARIES}
+        )
+else(WIN32)
+    set(TargetManager_LIBRARIES
+        "@CMAKE_INSTALL_PREFIX@/@LIB_INSTALL_DIR@/@CMAKE_SHARED_LIBRARY_PREFIX@@PROJECT_NAME_LOWER@@CMAKE_SHARED_LIBRARY_SUFFIX@"
+        ${<dependency>_LIBRARIES}
+        )
+endif(WIN32)
+
+set(TargetManager_DEFINITIONS ${<dependency>_DEFINITIONS})
+
+set(TargetManager_VERSION @PROJECT_VERSION@)
+set(TargetManager_VERSION_MAJOR @PROJECT_VERSION_MAJOR@)
+set(TargetManager_VERSION_MINOR @PROJECT_VERSION_MINOR@)
+set(TargetManager_VERSION_REVISION @PROJECT_VERSION_REVISION@)
+set(TargetManager_VERSION_CANDIDATE @PROJECT_VERSION_CANDIDATE@)
+
