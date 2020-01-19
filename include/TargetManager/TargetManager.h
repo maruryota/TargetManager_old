@@ -23,6 +23,7 @@
 // <rtc-template block="consumer_stub_h">
 #include "MobileRobotStub.h"
 #include "BasicDataTypeStub.h"
+#include "TargetInfo.h"
 
 // </rtc-template>
 
@@ -152,7 +153,8 @@ class TargetManager
    * 
    */
   virtual RTC::ReturnCode_t onExecute(RTC::UniqueId ec_id);
-  std::vector<std::vector< float >>  poses;
+  std::vector<TargetInfo>  poses;
+  double threshould = 0.05;
 
   /***
    *
@@ -243,6 +245,9 @@ class TargetManager
   
   // </rtc-template>
 
+  RTC::TimedPose2D m_currentPose;
+  InPort<RTC::TimedPose2D> m_currentPoseIn;
+
 
   // DataOutPort declaration
   // <rtc-template block="outport_declare">
@@ -253,7 +258,7 @@ class TargetManager
   // <rtc-template block="corbaport_declare">
   /*!
    */
-  RTC::CorbaPort m_targetPosePort;
+  RTC::CorbaPort m_tidyUpManagerPort;
   
   // </rtc-template>
 
@@ -266,7 +271,7 @@ class TargetManager
   // <rtc-template block="consumer_declare">
   /*!
    */
-  RTC::CorbaConsumer<RTC::TidyUpManager> m_targetPose;
+  RTC::CorbaConsumer<RTC::TidyUpManager> m_tidyUpManager;
   
   // </rtc-template>
 

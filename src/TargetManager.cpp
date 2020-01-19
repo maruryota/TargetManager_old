@@ -8,6 +8,9 @@
  */
 
 #include "TargetManager.h"
+#include "TargetInfo.h"
+#include "math.h"
+
 
 // Module specification
 // <rtc-template block="module_spec">
@@ -114,27 +117,79 @@ RTC::ReturnCode_t TargetManager::onDeactivated(RTC::UniqueId ec_id)
 
 RTC::ReturnCode_t TargetManager::onExecute(RTC::UniqueId ec_id)
 {
+	if (m_currentPoseIn.isNew) {
+		m_currentPoseIn.read();
+	}
 	if (m_pointIn.isNew()) {
 		m_pointIn.read();
 		std::string data = m_point.data;
 		std::cout << "[RTC:TargetManager] Receiven Command (" << data << ")" << std::endl;
 		std::stringstream ss{ data };
 
-		std::vector<std::vector<float>> get_poses;
+		std::vector<TargetInfo> get_poses, return_poses;
 		std::string string_pose, string_pose2;
 
 		// split()
 		while (std::getline(ss, string_pose, ',')) {
-			std::vector<float> d;
+			std::vector<double> d;
 			std::stringstream ss2{ string_pose };
+			int count = 0;
 			while (std::getline(ss2, string_pose2, ' ')) {
 				float d_in = std::stod(string_pose2);
-				d.push_back(d_in);
+				if ((count == 0) || (count == 1)) {
+					get_poses.pose.push_back(d_in);
+				}
+				else if (count == 2) {
+					get_poses.kind = string_pose2;
+				}
+				else {
+					std::cout << "unknown string:" << data << std::endl;
+					return RTC::RTC_ERROR;
+				}
+				count++;
 			}
-			get_poses.push_back(d);
 		}
 
 		// 与えられた座標がすでにあるものかどうかの判定
+		if (poses.empty()) {
+			poses = get_poses;
+		}
+		else {
+			for (TargetInfo g_p : get_poses) {
+				for (auto p : poses) {
+					if ((p.kind == g_p.kind) && (p.pose[0] + threshould > g_p.pose[0]) && (p.pose[0] - threshould > g_p.pose[0]) && 
+												(p.pose[1] + threshould > g_p.pose[1]) && (p.pose[1] - threshould > g_p.pose[1])) {
+						continue;
+					}
+				}
+				return_poses.push_back(g_p);
+			}
+			poses = return_poses;
+		}
+
+		if (poses.size() > 0) {
+			double distance;
+			distance = pow(m_currentPose.data.position.x - poses[0].pose[0], 2) + pow(m_currentPose.data.position.y - poses[0].pose[1], 2);
+			distance = pow(distance, 1 / 2);
+			int nearest_idx = 0;
+			for (int i = 1; i++; i < poses.size()) {
+				double d = pow(m_currentPose.data.position.x - poses[i].pose[0], 2) + pow(m_currentPose.data.position.y - poses[i].pose[1], 2);
+				if (d < distance) {
+					distance = d;
+					nearest_idx = i;
+				}
+			}
+			TargetInfo return_pose = poses[nearest_idx];
+			RTC::RETURN_VALUE retval = m_tidyUpManager->tidyup(return_pose);
+
+			if (retval = RTC::RETURN_VALUE::RETVAL_OK) {
+				poses.erase(poses.begin() + nearest_idx);
+				std::cout << "tidy up success!" << std::endl;
+			}
+			else {
+				std::cout << "error is occured:" << retval << std::endl;
+			}
+		}
 	}
 
 	// posesがひとつ以上あればTidyUpManagerへ
