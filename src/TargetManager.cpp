@@ -111,12 +111,37 @@ RTC::ReturnCode_t TargetManager::onDeactivated(RTC::UniqueId ec_id)
 }
 */
 
-/*
+
 RTC::ReturnCode_t TargetManager::onExecute(RTC::UniqueId ec_id)
 {
+	if (m_pointIn.isNew()) {
+		m_pointIn.read();
+		std::string data = m_point.data;
+		std::cout << "[RTC:TargetManager] Receiven Command (" << data << ")" << std::endl;
+		std::stringstream ss{ data };
+
+		std::vector<std::vector<float>> get_poses;
+		std::string string_pose, string_pose2;
+
+		// split()
+		while (std::getline(ss, string_pose, ',')) {
+			std::vector<float> d;
+			std::stringstream ss2{ string_pose };
+			while (std::getline(ss2, string_pose2, ' ')) {
+				float d_in = std::stod(string_pose2);
+				d.push_back(d_in);
+			}
+			get_poses.push_back(d);
+		}
+
+		// 与えられた座標がすでにあるものかどうかの判定
+	}
+
+	// posesがひとつ以上あればTidyUpManagerへ
+
+
   return RTC::RTC_OK;
 }
-*/
 
 /*
 RTC::ReturnCode_t TargetManager::onAborting(RTC::UniqueId ec_id)

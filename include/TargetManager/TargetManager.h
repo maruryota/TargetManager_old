@@ -151,7 +151,8 @@ class TargetManager
    * 
    * 
    */
-  // virtual RTC::ReturnCode_t onExecute(RTC::UniqueId ec_id);
+  virtual RTC::ReturnCode_t onExecute(RTC::UniqueId ec_id);
+  std::vector<std::vector< float >>  poses;
 
   /***
    *
