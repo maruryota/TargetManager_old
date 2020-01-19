@@ -1,4 +1,4 @@
-set(comp_srcs TargetManager.cpp )
+set(comp_srcs TargetManager.cpp TargetInfo.cpp)
 set(standalone_srcs TargetManagerComp.cpp)
 
 if(${OPENRTM_VERSION_MAJOR} LESS 2)

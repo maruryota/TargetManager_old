@@ -66,10 +66,10 @@ RTC::ReturnCode_t TargetManager::onInitialize()
   // Set service provider to Ports
   
   // Set service consumers to Ports
-  m_targetPosePort.registerConsumer("targetPose", "RTC::TidyUpManager", m_targetPose);
+  m_tidyUpManagerPort.registerConsumer("targetPose", "RTC::TidyUpManager", m_tidyUpManager);
   
   // Set CORBA Service Ports
-  addPort(m_targetPosePort);
+  addPort(m_tidyUpManagerPort);
   
   // </rtc-template>
 
